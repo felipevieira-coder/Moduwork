@@ -1,20 +1,15 @@
-# MODUWORK
+# MODUWORK — MIGRADO
 
-Repositório operacional de aprendizados, playbooks, padrões e skills da MODU Cenografias.
+Este repositório foi consolidado em `felipevieira-coder/modu` em 2026-10-10.
 
-## Prospecção & Decision Intelligence
+O conteúdo operacional passou a ter como fonte canônica o repositório `modu`:
 
-- `prospecting/PLAYBOOK_MODU_200_TECNICAS_SCRAPING_HQ_DECISION_INTELLIGENCE.md` — 125 técnicas canônicas de scraping ético + 75 técnicas adicionais de prospecção profunda, autoridade de compra e inteligência de decisores.
-- `skills/prospeccao-decisor-cenografia/SKILL.md` — skill operacional para localizar 1 decisor principal por empresa para cenografia, montagem de estandes, live marketing, ativações e produção.
+- `prospecting/PLAYBOOK_MODU_200_TECNICAS_SCRAPING_HQ_DECISION_INTELLIGENCE.md`
+- `skills/prospeccao-decisor-cenografia/SKILL.md`
 
-## Princípios
+O README original do Moduwork também foi preservado no repositório canônico em:
 
-- precisão > volume
-- evidência > palpite
-- fontes primárias > agregadores
-- hard gates não podem ser compensados por score
-- 1 decisor principal por empresa
-- provenance, freshness, deduplicação e opt-out obrigatórios
-- automação somente em fontes e condições permitidas
+- `legacy/Moduwork/README.md`
+- `legacy/Moduwork/MIGRATION_INFO.md`
 
-Versão inicial: 2026-10-04.
+Não adicionar novos aprendizados, skills ou playbooks neste repositório. Novas versões devem ser mantidas em `felipevieira-coder/modu`.
