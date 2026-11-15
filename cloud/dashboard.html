@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="pt-BR">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MODU • Prospect Intelligence Cloud</title>
+<style>
+:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;color:#f0f5f4;background:#081113}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 80% 0%,#173233 0%,#081113 55%);padding:36px 22px}
+main{max-width:1030px;margin:auto}header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:30px}
+.brand{display:flex;align-items:center;gap:14px}.logo{display:grid;place-items:center;width:42px;height:42px;border-radius:12px;background:#c4f7de;color:#0b2524;font-weight:900;letter-spacing:-.04em}
+.brand b{font-size:17px;letter-spacing:.025em}.sub{color:#8aaca9;font-size:12px}
+.pill{border:1px solid #47665f;background:#142624;border-radius:999px;padding:9px 15px;font-size:13px;color:#c1e9d8}
+h1{font-size:clamp(27px,4.5vw,40px);letter-spacing:-.05em;margin:0 0 10px}p.lead{color:#97aca8;line-height:1.6;margin:0 0 26px}
+.card{background:#102022e8;border:1px solid #27413e;border-radius:18px;padding:22px}
+.unlock{display:flex;align-items:end;gap:12px;flex-wrap:wrap;margin-bottom:22px}
+label{font-size:13px;color:#a7c8c0;display:block;margin-bottom:7px}
+input{background:#081616;border:1px solid #4a6b63;border-radius:10px;padding:13px 15px;color:#f4fff7;font-size:15px;min-width:250px}
+input:focus{outline:2px solid #b0eccd}button{background:#b8f5d7;color:#0d2423;border:0;border-radius:11px;padding:14px 22px;font-weight:750;cursor:pointer}
+button.secondary{background:#203b36;color:#dbf1e8}button:hover{filter:brightness(1.07)}#feedback{font-size:13px;color:#b3cac2;align-self:center}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:20px 0}
+.metric{padding:23px 21px;background:#122324;border:1px solid #2a4844;border-radius:15px}
+.metric small{display:block;font-size:12px;color:#9fbbb5;line-height:1.5;min-height:32px}
+.metric strong{display:block;font-size:34px;letter-spacing:-.06em;margin-top:7px}
+.row{display:flex;justify-content:space-between;gap:14px;margin:11px 0;font-size:14px}
+.row span:first-child{color:#8faea7}.row b{font-weight:650;text-align:right;word-break:break-word}
+.cols{display:grid;grid-template-columns:1.25fr 1fr;gap:16px}
+h2{font-size:16px;margin:0 0 19px}.track{height:8px;border-radius:99px;overflow:hidden;background:#294340;margin-top:10px}.track>div{height:100%;background:#b8f5d7;width:0%;transition:width .3s}
+.note{font-size:12px;color:#97aca8;line-height:1.5;margin-top:20px}
+footer{font-size:12px;margin-top:26px;color:#638680;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+#data{display:none}#setup{max-width:720px}a{color:#b8f5d7}
+@media(max-width:750px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.cols{grid-template-columns:1fr}body{padding:23px 14px}.metric{padding:18px}}
+</style></head>
+<body><main>
+<header><div class="brand"><span class="logo">M</span><div><b>MODU / PROSPECT INTELLIGENCE</b><div class="sub">Cloud Worker · Monitoramento protegido</div></div></div><span class="pill" id="liveBadge">● Aguardando autenticação</span></header>
+<h1>Inteligência comercial contínua.</h1>
+<p class="lead">Monitoramento do agente que encontra e valida decisores dos expositores de 2027. O painel é atualizado automaticamente a cada 20 segundos.</p>
+<section class="card unlock" id="setup"><div><label for="token">Token do painel (STATUS_TOKEN)</label><input type="password" id="token" autocomplete="off" placeholder="Informe o token de acesso"></div>
+<button id="connect">Conectar ao painel</button><div id="feedback" role="status">Os registros pessoais permanecem na planilha privada.</div></section>
+<div id="data">
+<div class="grid">
+<div class="metric"><small>Pesquisas acumuladas</small><strong id="processed">—</strong></div>
+<div class="metric"><small>Decisores validados</small><strong id="validated">—</strong></div>
+<div class="metric"><small>Pendências para revisão</small><strong id="review">—</strong></div>
+<div class="metric"><small>Pesquisas realizadas hoje</small><strong id="today">—</strong></div>
+</div>
+<div class="cols">
+<section class="card"><h2>Execução do motor</h2>
+<div class="row"><span>Situação</span><b id="state">—</b></div>
+<div class="row"><span>Modo</span><b id="mode">—</b></div>
+<div class="row"><span>Última execução concluída</span><b id="last">—</b></div>
+<div class="row"><span>Próxima verificação</span><b id="next">—</b></div>
+<div class="row"><span>Última descoberta de expositores</span><b id="discovery">—</b></div>
+<div class="row"><span>Falha técnica</span><b id="error">Nenhuma</b></div>
+<p class="note">O agente usa fontes permitidas e não faz scraping automatizado do LinkedIn. A contagem de pesquisa inclui registros não validados.</p></section>
+<section class="card"><h2>Capacidade diária e auditoria</h2>
+<div class="row"><span>Uso diário</span><b id="quota">—</b></div>
+<div class="track"><div id="bar"></div></div>
+<div class="row"><span>Quantidade por ciclo</span><b id="batch">—</b></div>
+<div class="row"><span>Ciclos executados</span><b id="cycles">—</b></div>
+<div class="row"><span>Validação provável</span><b id="probable">—</b></div>
+<div class="row"><span>Erros em pesquisas</span><b id="errors">—</b></div>
+<div class="row"><span>Edição de interesse</span><b>2027</b></div>
+<p class="note">Os checkpoints ficam em volume persistente. O Google Sheets é a fonte de verdade; não existe envio automático de mensagens.</p></section>
+</div></div>
+<footer><span>MODU Cenografias · Painel de telemetria agregada</span><span id="updated">Acesso com token · atualização a cada 20 s</span></footer>
+</main>
+<script>
+(() => {
+"use strict";
+let authToken = "", timer = null;
+const $ = id => document.getElementById(id);
+const fmt = n => Number(n || 0).toLocaleString("pt-BR");
+const datefmt = v => v ? new Date(v).toLocaleString("pt-BR", {timeZone:"America/Sao_Paulo"}) : "—";
+const names = {starting:"Iniciando",paused:"Pausado",config_required:"Faltam credenciais",running:"Pesquisando",idle:"Em espera",error:"Erro na última execução",daily_limit:"Limite diário alcançado"};
+async function refresh(){
+  if(!authToken) return;
+  try {
+    const res=await fetch("/api/status",{headers:{Authorization:"Bearer "+authToken},cache:"no-store"});
+    if(!res.ok) throw new Error(res.status===401?"Token inválido":"Erro HTTP "+res.status);
+    const x=await res.json(), t=x.totals||{};
+    $("processed").textContent=fmt(t.processed);
+    $("validated").textContent=fmt(t.validated);
+    $("review").textContent=fmt(t.review);
+    $("today").textContent=fmt(x.today_processed);
+    $("state").textContent=names[x.state]||x.state;
+    $("mode").textContent=x.mode==="dry-run"?"Teste sem gravação":"Atualização da base";
+    $("last").textContent=datefmt(x.last_run_finished_at);
+    $("next").textContent=datefmt(x.next_cycle_at);
+    $("discovery").textContent=datefmt(x.last_discovery_at);
+    $("error").textContent=x.last_error_code||"Nenhuma";
+    $("quota").textContent=fmt(x.today_processed)+" / "+fmt(x.daily_limit);
+    $("batch").textContent=fmt(x.max_rows_per_cycle);
+    $("cycles").textContent=fmt(x.cycles);
+    $("probable").textContent=fmt(t.probable);
+    $("errors").textContent=fmt(t.errors);
+    $("bar").style.width=Math.min(100,(x.today_processed/Math.max(1,x.daily_limit))*100)+"%";
+    $("liveBadge").textContent="● "+(names[x.state]||x.state);
+    $("updated").textContent="Atualizado "+new Date().toLocaleTimeString("pt-BR");
+    $("data").style.display="block";$("setup").style.display="none";
+  } catch(e) {
+    $("feedback").textContent=String(e.message);
+    $("setup").style.display="flex";
+    $("liveBadge").textContent="● Conexão indisponível";
+    if(e.message==="Token inválido") {authToken="";$("data").style.display="none";}
+  }
+}
+$("connect").addEventListener("click",()=>{
+  authToken=$("token").value.trim();$("token").value="";
+  refresh();
+  if(timer) clearInterval(timer);
+  timer=setInterval(refresh,20000);
+});
+$("token").addEventListener("keydown",e=>{if(e.key==="Enter") $("connect").click();});
+})();
+</script>
+</body></html>
