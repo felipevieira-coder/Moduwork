@@ -1,0 +1,12 @@
+**/__pycache__/
+**/*.pyc
+.git
+.env
+.env.*
+!.env.cloud.example
+data/
+*.sqlite3
+*.jsonl
+credentials.json
+token.json
+**/service-account*.json
