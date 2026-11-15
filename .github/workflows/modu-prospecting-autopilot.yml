@@ -1,0 +1,102 @@
+name: MODU | Prospeccao autonoma
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Somente pesquisar e auditar, sem escrever na base"
+        required: false
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: modu-prospecting-autopilot
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    if: ${{ vars.MODU_AUTOMATION_ENABLED == 'true' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      SPREADSHEET_ID: ${{ secrets.MODU_SPREADSHEET_ID }}
+      GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+      MODU_SOURCE_TOKEN: ${{ secrets.MODU_SOURCE_TOKEN }}
+      OPENAI_MODEL: ${{ vars.MODU_OPENAI_MODEL || 'gpt-5.5' }}
+      SHEET_NAME: "EXPOSITORES | BASE ÚNICA"
+      GOOGLE_SERVICE_ACCOUNT_FILE: ${{ runner.temp }}/modu-service-account.json
+      MODU_MAX_ROWS: ${{ vars.MODU_MAX_ROWS || '20' }}
+      RESEARCH_WORKERS: "2"
+      RESEARCH_BATCH_SIZE: "8"
+      REFRESH_AFTER_ROWS: "8"
+      SLEEP_BETWEEN_ROWS: "2"
+      EXCLUDED_EVENTS: "GL EVENTS"
+      PYTHONUNBUFFERED: "1"
+
+    steps:
+      - name: Verificar configuracao
+        run: |
+          set -euo pipefail
+          for name in OPENAI_API_KEY SPREADSHEET_ID GOOGLE_SERVICE_ACCOUNT_JSON MODU_SOURCE_TOKEN; do
+            if [ -z "${!name:-}" ]; then
+              echo "::error::Defina o secret $name antes da execucao."
+              exit 1
+            fi
+          done
+          printf '%s' "$GOOGLE_SERVICE_ACCOUNT_JSON" > "$GOOGLE_SERVICE_ACCOUNT_FILE"
+          chmod 600 "$GOOGLE_SERVICE_ACCOUNT_FILE"
+
+      - name: Checkout painel Moduwork
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Checkout motor privado canonico
+        uses: actions/checkout@v4
+        with:
+          repository: felipevieira-coder/modu
+          ref: main
+          token: ${{ secrets.MODU_SOURCE_TOKEN }}
+          path: canonical-modu
+          persist-credentials: false
+
+      - name: Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Dependencias
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ./canonical-modu/prospecting/decision_enricher
+
+      - name: Descoberta incremental de expositores (fila de revisao)
+        if: ${{ vars.MODU_DISCOVERY_ENABLED == 'true' }}
+        run: python prospecting/discover.py
+
+      - name: Completar decisores nas feiras de 2027
+        env:
+          MODU_DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run && 'true' || 'false' }}
+        run: python prospecting/run_core.py
+
+      - name: Resumo de execucao
+        if: always()
+        run: |
+          {
+            echo "## MODU Prospecting"
+            echo "- Acionamento: ${{ github.event_name }}"
+            echo "- Edicao-alvo: 2027"
+            echo "- Informacoes pessoais e evidencias ficam somente no Google Sheets privado."
+            echo "- Este workflow nao publica CSVs nem logs de contatos."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Limpar credenciais locais
+        if: always()
+        run: rm -f "$GOOGLE_SERVICE_ACCOUNT_FILE"
