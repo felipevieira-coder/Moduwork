@@ -1,0 +1,36 @@
+name: MODU Cloud - testes e Docker
+
+on:
+  push:
+    paths:
+      - "cloud/**"
+      - "Dockerfile"
+      - "railway.json"
+      - "docker-compose.yml"
+      - ".github/workflows/modu-cloud-ci.yml"
+  pull_request:
+    paths:
+      - "cloud/**"
+      - "Dockerfile"
+      - "railway.json"
+      - "docker-compose.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Sintaxe Python
+        run: python -m py_compile cloud/worker.py cloud/server.py prospecting/run_core.py prospecting/discover.py
+      - name: Testes locais sem credenciais
+        run: python -m unittest discover -s cloud/tests -v
+      - name: Validar config Docker/Railway
+        run: python -m json.tool railway.json >/dev/null
+      - name: Docker build sem secrets
+        run: docker build -t modu-cloud-ci .
