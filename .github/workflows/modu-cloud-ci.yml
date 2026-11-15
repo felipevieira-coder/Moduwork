@@ -34,3 +34,17 @@ jobs:
         run: python -m json.tool railway.json >/dev/null
       - name: Docker build sem secrets
         run: docker build -t modu-cloud-ci .
+
+      - name: Empacotar artefato de deploy versionado
+        run: |
+          mkdir -p dist
+          tar -czf "dist/MODU-Cloud-Deploy-${GITHUB_SHA::12}.tar.gz" \
+            Dockerfile railway.json docker-compose.yml .env.cloud.example \
+            cloud prospecting skills README.md
+      - name: Publicar artefato do GitHub Actions
+        uses: actions/upload-artifact@v4
+        with:
+          name: MODU-Cloud-Deploy
+          path: dist/*.tar.gz
+          if-no-files-found: error
+          retention-days: 30
