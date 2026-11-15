@@ -171,6 +171,24 @@ def run_discovery():
 
 
 def worker_loop(state: RuntimeState, stop: threading.Event):
+    # POSIX advisory lock: two instances sharing /data cannot run together.
+    import fcntl
+    lock_file = Path(os.getenv("DATA_DIR", "/data")) / "state" / "cloud.lock"
+    lock_file.parent.mkdir(parents=True, exist_ok=True)
+    with open(lock_file, "a", encoding="utf-8") as lock:
+        try:
+            fcntl.flock(lock.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            state.update(state="duplicate_worker_blocked",
+                         last_error_code="instance_lock_busy")
+            return
+        try:
+            _run_worker_loop(state, stop)
+        finally:
+            fcntl.flock(lock.fileno(), fcntl.LOCK_UN)
+
+
+def _run_worker_loop(state: RuntimeState, stop: threading.Event):
     interval = bounded_int("CYCLE_INTERVAL_SECONDS", 900, 60, 86400)
     limit = bounded_int("MAX_DAILY_ROWS", 100, 1, 2000)
     max_batch = bounded_int("MODU_MAX_ROWS", 10, 1, 100)
