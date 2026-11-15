@@ -127,7 +127,7 @@ def main() -> int:
     base_rows = base.get_all_values()
     schema = SheetSchema.from_headers(base_rows[0])
     def fair_key(s: str) -> str:
-        return re.sub(r"20\\d{2}", "", normalize(s))
+        return re.sub(r"20\d{2}", "", normalize(s))
 
     known = set()
     for row in base_rows[1:]:
