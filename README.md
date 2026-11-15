@@ -1,3 +1,17 @@
+# MODUWORK — Cloud Prospect Intelligence
+
+**Novo: motor cloud contínuo (Docker + Railway), dashboard protegido e persistência.**
+
+- [Guia completo de instalação na cloud](cloud/README.md)
+- [Configuração de serviço persistente](railway.json)
+- [Motor e proteção de dados](cloud/worker.py)
+- [Dashboard com refresh a cada 20 s](cloud/dashboard.html)
+- [Testes automáticos](.github/workflows/modu-cloud-ci.yml)
+
+> **O software está versionado, mas a cloud ainda precisa ser configurada/ativada em uma conta do provedor.** O modo padrão é pausado e sem gravação. A lógica anterior de GitHub Actions (hora em hora) é fallback; configure `MODU_CLOUD_PRIMARY=true` nas variáveis Actions para impedir dupla escrita quando o serviço de cloud estiver ativo.
+
+---
+
 # MODUWORK — Painel de automação da prospecção
 
 [![MODU Prospecting Autopilot](https://github.com/felipevieira-coder/Moduwork/actions/workflows/modu-prospecting-autopilot.yml/badge.svg)](https://github.com/felipevieira-coder/Moduwork/actions/workflows/modu-prospecting-autopilot.yml)
