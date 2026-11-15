@@ -20,7 +20,7 @@ concurrency:
 
 jobs:
   refresh:
-    if: ${{ vars.MODU_AUTOMATION_ENABLED == 'true' || github.event_name == 'workflow_dispatch' }}
+    if: ${{ (vars.MODU_AUTOMATION_ENABLED == 'true' || github.event_name == 'workflow_dispatch') && vars.MODU_CLOUD_PRIMARY != 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 50
     env:
