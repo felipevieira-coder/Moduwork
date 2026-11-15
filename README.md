@@ -1,5 +1,8 @@
 # MODUWORK — Painel de automação da prospecção
 
+[![MODU Prospecting Autopilot](https://github.com/felipevieira-coder/Moduwork/actions/workflows/modu-prospecting-autopilot.yml/badge.svg)](https://github.com/felipevieira-coder/Moduwork/actions/workflows/modu-prospecting-autopilot.yml)
+
+
 Este repositório é o **agendador e painel de controle público** da prospecção 2027 da MODU. O repositório **privado** `felipevieira-coder/modu` continua sendo a fonte canônica dos playbooks, regras, testes e motor de enriquecimento (migração original de 2026-10-10). **Nenhuma lista de contatos, planilha, e-mail, credencial ou evidência pessoal deve ser commitada aqui.**
 
 ## O que foi preparado
