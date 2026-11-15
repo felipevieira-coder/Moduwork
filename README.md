@@ -43,7 +43,7 @@ A execução agendada **não será processada** enquanto a variável `MODU_AUTOM
 ```text
 GitHub Actions (cron, manual)
   -> checkout do motor privado modu
-  -> Google Sheets / EXPOSTORES | BASE ÚNICA
+  -> Google Sheets / EXPOSITORES | BASE ÚNICA
       -> seleção só 2027 -> busca pública -> score -> hard gates
       -> atualização serial e readback
   -> radar opcional -> NOVOS EXPOSITORES | REVISAO
