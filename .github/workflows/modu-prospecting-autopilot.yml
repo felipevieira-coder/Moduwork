@@ -71,6 +71,7 @@ jobs:
         with:
           python-version: "3.11"
           cache: pip
+          cache-dependency-path: canonical-modu/prospecting/decision_enricher/pyproject.toml
 
       - name: Dependencias
         run: |
@@ -78,7 +79,7 @@ jobs:
           python -m pip install -e ./canonical-modu/prospecting/decision_enricher
 
       - name: Descoberta incremental de expositores (fila de revisao)
-        if: ${{ vars.MODU_DISCOVERY_ENABLED == 'true' }}
+        if: ${{ vars.MODU_DISCOVERY_ENABLED == 'true' && (github.event_name != 'workflow_dispatch' || inputs.dry_run == false) }}
         run: python prospecting/discover.py
 
       - name: Completar decisores nas feiras de 2027
