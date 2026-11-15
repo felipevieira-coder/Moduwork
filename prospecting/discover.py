@@ -126,13 +126,18 @@ def main() -> int:
 
     base_rows = base.get_all_values()
     schema = SheetSchema.from_headers(base_rows[0])
-    known = {
-        (normalize(schema.get(row, "company")), normalize(schema.get(row, "feira")))
-        for row in base_rows[1:]
-    }
+    def fair_key(s: str) -> str:
+        return re.sub(r"20\\d{2}", "", normalize(s))
+
+    known = set()
+    for row in base_rows[1:]:
+        year_and_fair = schema.get(row, "data_edicao") + " " + schema.get(row, "feira")
+        if "2027" in year_and_fair:
+            known.add((normalize(schema.get(row, "company")),
+                       fair_key(schema.get(row, "feira"))))
     staged_rows = staging.get_all_values()
     known.update(
-        (normalize(row[0]), normalize(row[1]))
+        (normalize(row[0]), fair_key(row[1]))
         for row in staged_rows[1:] if len(row) >= 2
     )
     candidates = search_exhibitors(fair)
@@ -145,7 +150,7 @@ def main() -> int:
             continue
         if normalize(company) in {"", "expositor", "patrocinador"}:
             continue
-        key = (normalize(company), normalize(fair))
+        key = (normalize(company), fair_key(fair))
         if key in known:
             continue
         known.add(key)
