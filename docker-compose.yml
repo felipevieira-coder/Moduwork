@@ -1,0 +1,16 @@
+services:
+  modu-cloud:
+    build: .
+    restart: unless-stopped
+    init: true
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    environment:
+      DATA_DIR: /data
+      PORT: "8080"
+    volumes:
+      - modu_data:/data
+volumes:
+  modu_data:
